@@ -4,32 +4,35 @@ const books = require('./books_dumb');
 let booksDirectory = books;
 
 router.get('/books', function (req, res) {
-    res.send(booksDirectory);
+  res.send(booksDirectory);
 });
 
-router.get('/books/:id', function (req, res) {
-    const { id } = req.params;
+// router.get('/books/:id', function (req, res) {
+//   const { id } = req.params;
 
-    const book = booksDirectory.find(b => b.isbn === id);
-    if (!book) return res.status(404).send('Book does not exist');
+//   const book = booksDirectory.find(b => b.isbn === id);
+//   if (!book) return res.status(404).send('Book does not exist');
 
-    res.send(book);
-});
+//   res.send(book);
+// });
+
+
 
 
 // url example 
 //localhost:5000/api/v1/books/title?title=nameTitle
 
-http: router.get("/books/title/:title", function (req, res) {
-  const { title } = req.params;
-  res.send(matchingBooks);
+http: router.get("/books/title/:word", function (req, res) {
+  const { word } = req.params;
+
+  if (!word) return res.send(booksDirectory); //  if there is no title return all books
 
   const matchingBooks = booksDirectory.filter((book) =>
-    book.title.toLowerCase().includes(title.toLowerCase())
+    book.title.toLowerCase().includes(word.toLowerCase())
   );
 
   if (matchingBooks.length === 0) {
-    return res.status(404).send("No books found with that title");
+    return res.send([]);
   }
 
   res.send(matchingBooks);
@@ -38,104 +41,20 @@ http: router.get("/books/title/:title", function (req, res) {
 
 // url example 
 //localhost:5000/api/v1/books/author?title=nameauthor
-router.get("/books/author/:author", function (req, res) {
-  const { author } = req.params;
+router.get("/books/author/:word", function (req, res) {
+  const { word } = req.params;
 
   const matchingBooks = booksDirectory.filter((book) =>
-    book.authors.some((a) => a.toLowerCase().includes(author.toLowerCase()))
+    book.authors.some((a) => a.toLowerCase().includes(word.toLowerCase()))
   );
 
   if (matchingBooks.length === 0) {
-    return res.status(404).send("No books found by that author");
+    return res.send([]);
   }
 
   res.send(matchingBooks);
 });
 
 
-router.post('/books', function (req, res) {
-    const {
-        title,
-        isbn,
-        pageCount,
-        publishedDate,
-        thumbnailUrl,
-        shortDescription,
-        longDescription,
-        status,
-        authors,
-        categories
-    } = req.body;
-
-    const bookExist = booksDirectory.find(b => b.isbn === isbn);
-    if (bookExist) return res.send('Book already exist');
-
-    const book = {
-        title,
-        isbn,
-        pageCount,
-        publishedDate,
-        thumbnailUrl,
-        shortDescription,
-        longDescription,
-        status,
-        authors,
-        categories
-    };
-    booksDirectory.push(book);
-
-    res.send(book);
-});
-
-router.put('/books/:id', function (req, res) {
-    const { id } = req.params;
-    const {
-        title,
-        isbn,
-        pageCount,
-        publishedDate,
-        thumbnailUrl,
-        shortDescription,
-        longDescription,
-        status,
-        authors,
-        categories
-    } = req.body;
-
-    let book = booksDirectory.find(b => b.isbn === id);
-    if (!book) return res.status(404).send('Book does not exist');
-
-    const updateField = (val, prev) => !val ? prev : val;
-
-    const updatedBook = {
-        ...book,
-        title: updateField(title, book.title),
-        isbn: updateField(isbn, book.isbn),
-        pageCount: updateField(pageCount, book.pageCount),
-        publishedDate: updateField(publishedDate, book.publishedDate),
-        thumbnailUrl: updateField(thumbnailUrl, book.thumbnailUrl),
-        shortDescription: updateField(shortDescription, book.shortDescription),
-        longDescription: updateField(longDescription, book.longDescription),
-        status: updateField(status, book.status),
-        authors: updateField(authors, book.authors),
-        categories: updateField(categories, book.categories),
-    };
-
-    const bookIndex = booksDirectory.findIndex(b => b.isbn === book.isbn);
-    booksDirectory.splice(bookIndex, 1, updatedBook);
-
-    res.status(200).send(updatedBook);
-});
-
-router.delete('/books/:id', function (req, res) {
-    const { id } = req.params;
-
-    let book = booksDirectory.find(b => b.isbn === id);
-    if (!book) return res.status(404).send('Book does not exist');
-
-    booksDirectory = booksDirectory.filter(b => b.isbn !== id);
-
-    res.send('Success');
-});
 
 module.exports = router;
