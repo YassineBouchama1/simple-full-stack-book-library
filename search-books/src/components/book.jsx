@@ -69,7 +69,7 @@ const BookListComponent = () => {
           type="button"
           onClick={() => onSearch()}
         >
-          Search
+          Search {searchType && "by " + searchType}
         </button>
       </div>
 
