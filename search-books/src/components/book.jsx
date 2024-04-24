@@ -9,7 +9,7 @@ const BookListComponent = () => {
 
 
 
-
+  // fetching fun
   const fetchBooks = async (url = 'http://localhost:5000/api/v2/books/') => {
 
     // active loading
@@ -26,10 +26,14 @@ const BookListComponent = () => {
 
     };
   }
+
+
   useEffect(() => {
     fetchBooks();
   }, []);
 
+
+  //when we click on searhc btn
   const onSearch = () => {
     console.log(searchType)
     console.log(searchTerm)
